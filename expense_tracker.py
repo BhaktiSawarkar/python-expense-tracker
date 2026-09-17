@@ -1,24 +1,24 @@
 from datetime import datetime
-import json
+import sqlite3
 
-def save_expenses():
-      with open("expenses.json", "w") as file:
-            json.dump(expenses, file, indent=4)
+def init_db():
+    connection = sqlite3.connect("expenses.db")
+    cursor = connection.cursor()
 
-def load_expenses():
-      try:
-        with open("expenses.json", "r") as file:
-                  return json.load(file)
-      except FileNotFoundError:
-            return []
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date TEXT NOT NULL,
+            category TEXT NOT NULL,
+            description TEXT NOT NULL,
+            amount REAL NOT NULL
+        )
+    """)
 
+    connection.commit()
+    connection.close()
 
-expenses = load_expenses() 
-if expenses:
-    next_expense_id = max(expense["id"] for expense in expenses) + 1
-else:
-        next_expense_id = 1 
-
+init_db()
 
 def show_menu():
         print("=" * 40)
@@ -32,9 +32,7 @@ def show_menu():
         print("5. Exit")
         print("=" * 40)
 
-def add_expense():
-        global next_expense_id
-
+def add_expense():        
         #Date validation
         while True:
             date = input("Enter date (YYYY-MM-DD): ")
@@ -70,50 +68,77 @@ def add_expense():
                     break
             except ValueError:
                 print("Invalid input for amount. Please enter a valid amount.")
-                      
 
-        expense = {
-                "id" : next_expense_id,
-                "date" : date,
-                "category" : category,
-                "description" : description,
-                "amount" : amount
-        }
 
-        expenses.append(expense)
+        connection = sqlite3.connect("expenses.db")
+        cursor = connection.cursor()
 
-        save_expenses()
+        cursor.execute("""
+            INSERT INTO expenses (date, category, description, amount)
+            VALUES (?, ?, ?, ?)
+        """, (date, category, description, amount))
 
-        print("Expense Added Succesfully")
+        connection.commit()
+        connection.close()
 
-        next_expense_id += 1  
+        print("Expense Added Successfully")
 
 def view_expenses():
         print("Here is your Expense:")
+
+        connection = sqlite3.connect("expenses.db")
+        cursor = connection.cursor()
+
+        cursor.execute(""" SELECT id, date, category, description, amount FROM expenses """)
+        expenses = cursor.fetchall()
+
+        connection.close()
+
         if not expenses:
                 print("No expenses found.")
         else:
-                for item in expenses:
-                        display_expense(item)
+                for expense in expenses:
+                        print("-" * 40)
+                        print(f"ID          : {expense[0]}")
+                        print(f"Date        : {expense[1]}")
+                        print(f"Category    : {expense[2]}")
+                        print(f"Description : {expense[3]}")
+                        print(f"Amount      : ${expense[4]:.2f}")
+                        print("-" * 40)
 
 def search_expense():
-        try:
-              
-                search_id = int(input("Enter Expense ID for your search:"))
-        except ValueError:
-                print("Invalid input. Please enter a valid Expense ID.")
-
-        found = False
-        print("Search Results :")
-        for item in expenses:
-                if search_id == item["id"]:
-                        display_expense(item)
-                        found = True
+        while True:
+                try:
+                        search_id = int(input("Enter Expense ID for your search: "))
                         break
-        
-        if not found:
+                except ValueError:
+                        print("Invalid input. Please enter a valid Expense ID.")
+
+        connection = sqlite3.connect("expenses.db")
+        cursor = connection.cursor()
+
+        cursor.execute("""
+        SELECT id, date, category, description, amount 
+        FROM expenses 
+        WHERE id = ? """, (search_id,))
+
+        expense = cursor.fetchone()
+
+        connection.close()
+
+        print("Search Results:")
+
+        if expense:
+                print("-" * 40)
+                print(f"ID          : {expense[0]}")
+                print(f"Date        : {expense[1]}")
+                print(f"Category    : {expense[2]}")
+                print(f"Description : {expense[3]}")
+                print(f"Amount      : ${expense[4]:.2f}")
+                print("-" * 40)
+        else:
                 print("Expense Not Found")
-        
+
 def delete_expense():
         while True:
                 try:
@@ -123,17 +148,20 @@ def delete_expense():
                 else:
                         break
 
-        found = False
-        for item in expenses:
-                if del_expense_id == item["id"]:
-                        found = True
-                        expenses.remove(item)
-                        save_expenses()
-                        print("Expense deleted successfully.")
-                        break
+        connection = sqlite3.connect("expenses.db")
+        cursor = connection.cursor()
 
-        if not found:
-                print("Expense not found")
+        cursor.execute("""
+        DELETE FROM expenses
+        WHERE ID = ?
+        """, (del_expense_id,))
+        connection.commit()
+
+        if cursor.rowcount > 0:
+                print("Expense Deleted Successfully")
+        else:
+                print("Expense Not Found")
+        connection.close()
 
 def display_expense(expense):
 
