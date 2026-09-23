@@ -29,7 +29,8 @@ def show_menu():
         print("2. View Expense")
         print("3. Search Expense")
         print("4. Delete Expense")
-        print("5. Exit")
+        print("5. Update Expense")
+        print("6. Exit")
         print("=" * 40)
 
 def add_expense():        
@@ -163,6 +164,126 @@ def delete_expense():
                 print("Expense Not Found")
         connection.close()
 
+def update_expense():
+        print("Update Expense:")
+
+        while True:
+                try:
+                        update_id = int(input("Enter Expense ID to update the expense: "))
+                        break
+                except ValueError:
+                        print("Invalid input. Please enter a valid Expense ID.")
+
+        connection = sqlite3.connect("expenses.db")
+        cursor = connection.cursor()
+
+        cursor.execute("""
+        SELECT id, date, category, description, amount
+        FROM expenses
+        WHERE id = ?
+    """, (update_id,))
+
+        expense = cursor.fetchone()
+
+        connection.close()
+
+        if expense:
+                 print("Expense Found:")
+                 print(f"ID          : {expense[0]}")
+                 print(f"Date        : {expense[1]}")
+                 print(f"Category    : {expense[2]}")
+                 print(f"Description : {expense[3]}")
+                 print(f"Amount      : ${expense[4]:.2f}")
+
+                 print("\n What would uou like to update?")
+                 print("1. Date")
+                 print("2. Category")
+                 print("3. Description")
+                 print("4. Amount")
+
+                 while True:
+                        try:
+                                update_choice = int(input("Enter your choice for the update: "))
+                                if update_choice not in [1, 2, 3, 4]:
+                                        print("Invalid choice. Please enter a number between 1 and 4.")
+                                        continue
+                                break
+                        except ValueError:
+                                print("Invalid input. Please enter a number.")
+
+                 if update_choice == 1:
+                        new_value = input("Enter new date (YYYY-MM-DD): ")
+
+                        connection = sqlite3.connect("expenses.db")
+                        cursor = connection.cursor()
+
+                        cursor.execute("""
+                        UPDATE expenses
+                        SET date = ?
+                        WHERE id = ?
+                        """, (new_value, update_id))
+
+                        connection.commit()
+                        connection.close()
+                        print("Date Updated Successfully")
+
+                 elif update_choice == 2:
+                        new_value = input("Enter new category: ")
+
+                        connection = sqlite3.connect("expenses.db")
+                        cursor = connection.cursor()
+
+                        cursor.execute("""
+                        UPDATE expenses
+                        SET category = ?
+                        WHERE id = ?
+                        """, (new_value, update_id))
+
+                        connection.commit()
+                        connection.close()
+                        print("Category Updated Successfully")
+
+                 elif update_choice == 3:
+                        new_value = input("Enter new description: ")
+
+                        connection = sqlite3.connect("expenses.db")
+                        cursor = connection.cursor()
+
+                        cursor.execute("""
+                        UPDATE expenses
+                        SET description = ?
+                        WHERE id = ?
+                        """, (new_value, update_id))
+
+                        connection.commit()
+                        connection.close()
+                        print("Description Updated Successfully")
+
+                 elif update_choice == 4:        
+                        while True:
+                                try:
+                                        new_amount = float(input("Enter new amount: "))
+                                        if new_amount <= 0:
+                                                print("Amount must be a positive number. Please enter a valid amount.")
+                                                continue
+                                        break
+                                except ValueError:
+                                        print("Invalid input for amount. Please enter a valid amount.")
+                        connection = sqlite3.connect("expenses.db")
+                        cursor = connection.cursor()
+
+                        cursor.execute("""
+                        UPDATE expenses
+                        SET amount = ?
+                        WHERE id = ?
+                        """, (new_amount, update_id))
+
+                        connection.commit()
+                        connection.close()
+                        print("Amount Updated Successfully")
+        else: 
+                print("Expense Not Found")
+
 def display_expense(expense):
 
     print("-" * 40)
@@ -193,6 +314,8 @@ def main():
                 elif choice == 4:
                         delete_expense()
                 elif choice == 5:
+                        update_expense()
+                elif choice == 6:
                         break
                 else:
                         print("Invalid Choice. Please Try Again!")
