@@ -1,7 +1,9 @@
 import sqlite3
 
+DATABASE_NAME = "expenses.db"
+
 def get_connection():
-    return sqlite3.connect("expenses.db")
+    return sqlite3.connect(DATABASE_NAME)
 
 def init_db():
     connection = get_connection()
