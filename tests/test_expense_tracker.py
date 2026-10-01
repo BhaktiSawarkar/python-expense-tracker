@@ -116,4 +116,52 @@ def test_add_expense_invalid_date(monkeypatch, capsys):
     captured = capsys.readouterr()
 
     assert "Invalid date format" in captured.out
-    # We will handle the database call separately.
+
+def test_get_valid_date(monkeypatch):
+    inputs = iter([
+        "invalid-date",
+        "2026-09-29"
+    ])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    result = expense_tracker.get_valid_date()
+
+    assert result == "2026-09-29"    
+
+def test_get_valid_category(monkeypatch):
+    inputs = iter([
+        "",
+        "Food"
+    ])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    result = expense_tracker.get_valid_category()
+
+    assert result == "Food"
+
+def test_get_valid_description(monkeypatch):
+    inputs = iter([
+        "",
+        "Lunch"
+    ])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    result = expense_tracker.get_valid_description()
+
+    assert result == "Lunch"
+
+def test_get_valid_amount(monkeypatch):
+    inputs = iter([
+        "abc",
+        "-10",
+        "15.50"
+    ])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    result = expense_tracker.get_valid_amount()
+
+    assert result == 15.50
