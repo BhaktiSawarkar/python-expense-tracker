@@ -17,45 +17,64 @@ def show_menu():
         print("7. Exit")
         print("=" * 40)
 
+def get_valid_date():
+    while True:
+        date = input("Enter date (YYYY-MM-DD): ")
+
+        try:
+            datetime.strptime(date, "%Y-%m-%d")
+            return date
+
+        except ValueError:
+            print("Invalid date format. Please enter date in YYYY-MM-DD format.")
+
+def get_valid_category():
+    while True:
+        category = input("Enter the category: ")
+
+        if category.strip() == "":
+            print("Category cannot be empty. Please enter a valid category.")
+        else:
+            return category
+
+def get_valid_description():
+    while True:
+        description = input("Enter the description: ")
+
+        if description.strip() == "":
+            print("Description cannot be empty. Please enter a valid description.")
+        else:
+            return description
+
+def get_valid_amount():
+    while True:
+        try:
+            amount = float(input("Enter the amount for the expense: "))
+
+            if amount <= 0:
+                print("Amount must be a positive number. Please enter a valid amount.")
+            else:
+                return amount
+
+        except ValueError:
+            print("Invalid input for amount. Please enter a valid amount.")
+    
+
 def add_expense():        
         #Date validation
-        while True:
-            date = input("Enter date (YYYY-MM-DD): ")
-            try:
-                datetime.strptime(date, "%Y-%m-%d")
-                break
-            except ValueError:
-                print("Invalid date format. Please enter date in YYYY-MM-DD format.")
-
+        date = get_valid_date()
+        
         # Category validation
-        while True:
-            category = input("Enter the category: ")
-            if category.strip() == "":
-                print("Category cannot be empty. Please enter a valid category.")
-            else:
-                break
+        category = get_valid_category()
 
         # Description validation
-        while True:
-            description = input("Enter the description: ")
-            if description.strip() == "":
-                print("Description cannot be empty. Please enter a valid description.")
-            else:
-                break
+        description = get_valid_description()
 
         # Amount validation
-        while True:
-            try:
-                amount = float(input("Enter the amount for the expense: "))
-                if amount <= 0:
-                    print("Amount must be a positive number. Please enter a valid amount.")
-                else:
-                    break
-            except ValueError:
-                print("Invalid input for amount. Please enter a valid amount.")
+        amount = get_valid_amount()
 
         database.add_expense(date, category, description, amount)
-
+                   
 def view_expenses():
         print("Here is your Expense:")
 
