@@ -22,7 +22,18 @@ def test_database():
     database.DATABASE_NAME = original_database
     Path("test_expenses.db").unlink(missing_ok=True)
 
-    
+
+@pytest.fixture
+def sample_expense(test_database):
+    database.add_expense(
+        "2026-09-29",
+        "Food",
+        "Lunch",
+        15.50
+    )
+
+    return database.get_expenses()[-1]
+
 
 def test_add_expense(test_database):
     database.add_expense(
@@ -58,15 +69,8 @@ def test_get_total_expenses(test_database):
 
     assert total == 35.50
 
-def test_get_expense_by_id(test_database):
-    database.add_expense(
-        "2026-09-29",
-        "Food",
-        "Lunch",
-        15.50
-    )
-
-    expense = database.get_expense_by_id(1)
+def test_get_expense_by_id(sample_expense):
+    expense = sample_expense
 
     assert expense[0] == 1
     assert expense[1] == "2026-09-29"
@@ -79,19 +83,13 @@ def test_get_expense_by_id_not_found(test_database):
 
     assert expense is None
 
-def test_delete_expense(test_database):
-    database.add_expense(
-        "2026-09-29",
-        "Food",
-        "Lunch",
-        15.50
-    )
-
-    deleted = database.delete_expense(1)
+def test_delete_expense(sample_expense):
+    expense_id = sample_expense[0]
+    deleted = database.delete_expense(expense_id)
 
     assert deleted is True
 
-    expense = database.get_expense_by_id(1)
+    expense = database.get_expense_by_id(expense_id)
 
     assert expense is None
 
@@ -100,67 +98,43 @@ def test_delete_expense_not_found(test_database):
 
     assert deleted is False
 
-def test_update_date(test_database):
-    database.add_expense(
-        "2026-09-29",
-        "Food",
-        "Lunch",
-        15.50
-    )
-
-    updated = database.update_date(1, "2026-09-30")
+def test_update_date(sample_expense):
+    expense_id = sample_expense[0]
+    updated = database.update_date(expense_id, "2026-09-30")
 
     assert updated is True
 
-    expense = database.get_expense_by_id(1)
+    expense = database.get_expense_by_id(expense_id)
 
     assert expense[1] == "2026-09-30"
 
-def test_update_category(test_database):
-    database.add_expense(
-        "2026-09-29",
-        "Food",
-        "Lunch",
-        15.50
-    )
-
-    updated = database.update_category(1, "Restaurant")
+def test_update_category(sample_expense):
+    expense_id = sample_expense[0]
+    updated = database.update_category(expense_id, "Restaurant")
 
     assert updated is True
 
-    expense = database.get_expense_by_id(1)
+    expense = database.get_expense_by_id(expense_id)
 
     assert expense[2] == "Restaurant"
 
-def test_update_description(test_database):
-    database.add_expense(
-        "2026-09-29",
-        "Food",
-        "Lunch",
-        15.50
-    )
-
-    updated = database.update_description(1, "Dinner")
+def test_update_description(sample_expense):
+    expense_id = sample_expense[0]
+    updated = database.update_description(expense_id, "Dinner")
 
     assert updated is True
 
-    expense = database.get_expense_by_id(1)
+    expense = database.get_expense_by_id(expense_id)
 
     assert expense[3] == "Dinner"
 
-def test_update_amount(test_database):
-    database.add_expense(
-        "2026-09-29",
-        "Food",
-        "Lunch",
-        15.50
-    )
-
-    updated = database.update_amount(1, 25.75)
+def test_update_amount(sample_expense):
+    expense_id = sample_expense[0]
+    updated = database.update_amount(expense_id, 25.75)
 
     assert updated is True
 
-    expense = database.get_expense_by_id(1)
+    expense = database.get_expense_by_id(expense_id)
 
     assert expense[4] == 25.75
 
