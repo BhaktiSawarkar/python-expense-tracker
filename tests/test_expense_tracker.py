@@ -289,3 +289,16 @@ def test_update_expense_amount(monkeypatch):
 
     assert updated_values["expense_id"] == 1
     assert updated_values["amount"] == 25.75
+
+def test_get_update_choice(monkeypatch):
+    inputs = iter([
+        "abc",
+        "5",
+        "2"
+    ])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    result = expense_tracker.get_update_choice()
+
+    assert result == 2

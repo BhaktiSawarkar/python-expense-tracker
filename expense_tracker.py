@@ -74,6 +74,15 @@ def add_expense():
         amount = get_valid_amount()
 
         database.add_expense(date, category, description, amount)
+
+def display_expense(expense):
+    print("-" * 40)
+    print(f"ID          : {expense[0]}")
+    print(f"Date        : {expense[1]}")
+    print(f"Category    : {expense[2]}")
+    print(f"Description : {expense[3]}")
+    print(f"Amount      : ${expense[4]:.2f}")
+    print("-" * 40)
                    
 def view_expenses():
         print("Here is your Expense:")
@@ -84,13 +93,7 @@ def view_expenses():
                 print("No expenses found.")
         else:
                 for expense in expenses:
-                        print("-" * 40)
-                        print(f"ID          : {expense[0]}")
-                        print(f"Date        : {expense[1]}")
-                        print(f"Category    : {expense[2]}")
-                        print(f"Description : {expense[3]}")
-                        print(f"Amount      : ${expense[4]:.2f}")
-                        print("-" * 40)
+                        display_expense(expense)
 
 def search_expense():
         while True:
@@ -105,13 +108,7 @@ def search_expense():
         print("Search Results:")
 
         if expense:
-                print("-" * 40)
-                print(f"ID          : {expense[0]}")
-                print(f"Date        : {expense[1]}")
-                print(f"Category    : {expense[2]}")
-                print(f"Description : {expense[3]}")
-                print(f"Amount      : ${expense[4]:.2f}")
-                print("-" * 40)
+                display_expense(expense)
         else:
                 print("Expense Not Found")
 
@@ -129,7 +126,21 @@ def delete_expense():
         if deleted :
                 print("Expense Deleted Successfully")
         else:
-                print("Expense Not Found")      
+                print("Expense Not Found")
+
+def get_update_choice():
+    while True:
+        try:
+            update_choice = int(input("Enter your choice for the update: "))
+
+            if update_choice not in [1, 2, 3, 4]:
+                print("Invalid choice. Please enter a number between 1 and 4.")
+                continue
+
+            return update_choice
+
+        except ValueError:
+            print("Invalid input. Please enter a number.")      
 
 def update_expense():
         print("Update Expense:")
@@ -144,28 +155,14 @@ def update_expense():
         expense = database.get_expense_by_id(update_id)
         if expense:
                  print("Expense Found:")
-                 print(f"ID          : {expense[0]}")
-                 print(f"Date        : {expense[1]}")
-                 print(f"Category    : {expense[2]}")
-                 print(f"Description : {expense[3]}")
-                 print(f"Amount      : ${expense[4]:.2f}")
-
+                 display_expense(expense)
                  print("\n What would you like to update?")
                  print("1. Date")
                  print("2. Category")
                  print("3. Description")
                  print("4. Amount")
 
-                 while True:
-                        try:
-                                update_choice = int(input("Enter your choice for the update: "))
-                                if update_choice not in [1, 2, 3, 4]:
-                                        print("Invalid choice. Please enter a number between 1 and 4.")
-                                        continue
-                                break
-                        except ValueError:
-                                print("Invalid input. Please enter a number.")
-
+                 update_choice = get_update_choice()
                  if update_choice == 1:
                         while True:
                                 new_value = input("Enter new date (YYYY-MM-DD): ")
