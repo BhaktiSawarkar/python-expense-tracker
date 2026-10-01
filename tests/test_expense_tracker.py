@@ -165,3 +165,127 @@ def test_get_valid_amount(monkeypatch):
     result = expense_tracker.get_valid_amount()
 
     assert result == 15.50
+
+def test_update_expense_date(monkeypatch):
+    inputs = iter([
+        "1",
+        "1",
+        "2026-09-30"
+    ])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    monkeypatch.setattr(
+        "expense_tracker.database.get_expense_by_id",
+        lambda expense_id: (1, "2026-09-29", "Food", "Lunch", 15.50)
+    )
+
+    updated_values = {}
+
+    def fake_update_date(expense_id, new_date):
+        updated_values["expense_id"] = expense_id
+        updated_values["new_date"] = new_date
+        return True
+
+    monkeypatch.setattr(
+        "expense_tracker.database.update_date",
+        fake_update_date
+    )
+
+    expense_tracker.update_expense()
+
+    assert updated_values["expense_id"] == 1
+    assert updated_values["new_date"] == "2026-09-30"
+
+def test_update_expense_category(monkeypatch):
+    inputs = iter([
+        "1",
+        "2",
+        "Restaurant"
+    ])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    monkeypatch.setattr(
+        "expense_tracker.database.get_expense_by_id",
+        lambda expense_id: (1, "2026-09-29", "Food", "Lunch", 15.50)
+    )
+
+    updated_values = {}
+
+    def fake_update_category(expense_id, new_category):
+        updated_values["expense_id"] = expense_id
+        updated_values["category"] = new_category
+        return True
+
+    monkeypatch.setattr(
+        "expense_tracker.database.update_category",
+        fake_update_category
+    )
+
+    expense_tracker.update_expense()
+
+    assert updated_values["expense_id"] == 1
+    assert updated_values["category"] == "Restaurant"
+
+def test_update_expense_description(monkeypatch):
+    inputs = iter([
+        "1",
+        "3",
+        "Dinner"
+    ])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    monkeypatch.setattr(
+        "expense_tracker.database.get_expense_by_id",
+        lambda expense_id: (1, "2026-09-29", "Food", "Lunch", 15.50)
+    )
+
+    updated_values = {}
+
+    def fake_update_description(expense_id, new_description):
+        updated_values["expense_id"] = expense_id
+        updated_values["description"] = new_description
+        return True
+
+    monkeypatch.setattr(
+        "expense_tracker.database.update_description",
+        fake_update_description
+    )
+
+    expense_tracker.update_expense()
+
+    assert updated_values["expense_id"] == 1
+    assert updated_values["description"] == "Dinner"
+
+def test_update_expense_amount(monkeypatch):
+    inputs = iter([
+        "1",
+        "4",
+        "25.75"
+    ])
+
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+
+    monkeypatch.setattr(
+        "expense_tracker.database.get_expense_by_id",
+        lambda expense_id: (1, "2026-09-29", "Food", "Lunch", 15.50)
+    )
+
+    updated_values = {}
+
+    def fake_update_amount(expense_id, new_amount):
+        updated_values["expense_id"] = expense_id
+        updated_values["amount"] = new_amount
+        return True
+
+    monkeypatch.setattr(
+        "expense_tracker.database.update_amount",
+        fake_update_amount
+    )
+
+    expense_tracker.update_expense()
+
+    assert updated_values["expense_id"] == 1
+    assert updated_values["amount"] == 25.75
