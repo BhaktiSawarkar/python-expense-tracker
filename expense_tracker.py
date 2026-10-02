@@ -153,6 +153,16 @@ def get_update_choice():
             print("Invalid input. Please enter a number.")
 
 
+def display_update_result(updated, field_name):
+    if updated:
+        print(f"{field_name} Updated Successfully")
+    else:
+        print(
+            f"Failed to update {field_name.lower()}. "
+            "Please check the expense ID and try again."
+        )
+
+
 def update_expense():
     print("Update Expense:")
 
@@ -178,44 +188,24 @@ def update_expense():
         if update_choice == 1:
             new_value = get_valid_date()
             updated = database.update_date(update_id, new_value)
-            if updated:
-                print("Date Updated Successfully")
-            else:
-                print(
-                    "Failed to update date. Please check the expense ID and try again."
-                )
+            display_update_result(updated, "Date")
 
         elif update_choice == 2:
             new_value = get_valid_category()
             updated = database.update_category(update_id, new_value)
-            if updated:
-                print("Category Updated Successfully")
-            else:
-                print(
-                    "Failed to update category. Please check the expense ID and try again."
-                )
+            display_update_result(updated, "Category")
 
         elif update_choice == 3:
             new_value = get_valid_description()
             updated = database.update_description(update_id, new_value)
-            if updated:
-                print("Description Updated Successfully")
-            else:
-                print(
-                    "Failed to update description. Please check the expense ID and try again."
-                )
+            display_update_result(updated, "Description")
 
         elif update_choice == 4:
             new_value = get_valid_amount()
             updated = database.update_amount(update_id, new_value)
-            if updated:
-                print("Amount Updated Successfully")
-            else:
-                print(
-                    "Failed to update amount. Please check the expense ID and try again."
-                )
-    else:
-        print("Expense Not Found")
+            display_update_result(updated, "Amount")
+        else:
+            print("Expense Not Found")
 
 
 def expense_summary():
